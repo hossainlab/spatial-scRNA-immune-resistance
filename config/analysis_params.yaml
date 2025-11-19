@@ -1,0 +1,210 @@
+# Spatial-scRNA-seq Immunotherapy Resistance Atlas
+# Analysis Configuration Parameters
+
+project:
+  name: "SpatioResist Atlas"
+  version: "1.0.0"
+  description: "Pan-cancer spatial-scRNA-seq atlas of immunotherapy resistance"
+
+paths:
+  data_raw: "../data/raw"
+  data_processed: "../data/processed"
+  data_external: "../data/external"
+  results: "../results"
+  figures: "../results/figures"
+  tables: "../results/tables"
+  models: "../results/models"
+
+# Dataset configurations
+datasets:
+  scrna:
+    # Melanoma
+    - id: "GSE115978"
+      cancer_type: "Melanoma"
+      treatment: "anti-PD-1"
+      n_patients: 48
+      timepoints: ["pre", "post"]
+
+    # Basal cell carcinoma
+    - id: "GSE123813"
+      cancer_type: "BCC"
+      treatment: "anti-PD-1"
+      n_patients: 10
+
+    # Pancreatic cancer
+    - id: "GSE212966"
+      cancer_type: "PDAC"
+      treatment: "TME characterization"
+
+    - id: "GSE197177"
+      cancer_type: "PDAC"
+      treatment: "TME characterization"
+
+    # Hepatocellular carcinoma
+    - id: "GSE149614"
+      cancer_type: "HCC"
+      treatment: "ICIs"
+
+    - id: "GSE202642"
+      cancer_type: "HCC"
+      treatment: "adjacent tissue comparison"
+
+    # Gastric cancer
+    - id: "GSE206785"
+      cancer_type: "GC"
+      treatment: "metastasis"
+
+    - id: "GSE183904"
+      cancer_type: "GC"
+      treatment: "T cell characterization"
+
+    # Ovarian cancer
+    - id: "GSE130000"
+      cancer_type: "OV"
+      treatment: "primary/metastasis/relapse"
+
+  spatial:
+    - id: "GSE203612"
+      cancer_type: "GC"
+      platform: "10x Visium"
+
+# Quality control parameters
+qc:
+  # Cell-level QC
+  min_genes: 200
+  max_genes: 8000
+  min_counts: 500
+  max_counts: 50000
+  max_mito_pct: 20
+  max_ribo_pct: 50
+
+  # Gene-level QC
+  min_cells: 3
+
+  # Doublet detection
+  doublet_rate: 0.08
+
+# Normalization parameters
+normalization:
+  target_sum: 10000
+  log_transform: true
+
+# Feature selection
+feature_selection:
+  n_top_genes: 3000
+  flavor: "seurat_v3"
+  batch_key: "sample_id"
+
+# Dimensionality reduction
+dim_reduction:
+  n_pcs: 50
+  n_neighbors: 15
+
+# Clustering
+clustering:
+  resolution: [0.3, 0.5, 0.8, 1.0, 1.5]
+  default_resolution: 0.8
+
+# Integration parameters
+integration:
+  scvi:
+    n_latent: 30
+    n_layers: 2
+    n_epochs: 400
+    early_stopping: true
+    batch_key: "sample_id"
+    categorical_covariate_keys: ["cancer_type"]
+    continuous_covariate_keys: ["pct_counts_mt"]
+
+  harmony:
+    batch_key: "sample_id"
+    max_iter_harmony: 20
+
+# Cell type annotation
+annotation:
+  celltypist:
+    model: "Immune_All_Low.pkl"
+    majority_voting: true
+
+  markers:
+    T_cells: ["CD3D", "CD3E", "CD3G"]
+    CD4_T: ["CD4", "IL7R"]
+    CD8_T: ["CD8A", "CD8B"]
+    Tregs: ["FOXP3", "IL2RA"]
+    NK: ["NCAM1", "NKG7", "GNLY"]
+    B_cells: ["MS4A1", "CD79A", "CD19"]
+    Plasma: ["JCHAIN", "MZB1", "SDC1"]
+    Myeloid: ["CD14", "CD68", "FCGR3A"]
+    DC: ["CLEC9A", "CD1C", "FCER1A"]
+    Macrophage: ["CD163", "MRC1", "MSR1"]
+    Fibroblast: ["COL1A1", "DCN", "LUM"]
+    Endothelial: ["PECAM1", "VWF", "CDH5"]
+    Epithelial: ["EPCAM", "KRT18", "KRT19"]
+
+  # T cell exhaustion markers
+  exhaustion:
+    markers: ["PDCD1", "CTLA4", "LAG3", "TIGIT", "HAVCR2", "TOX"]
+
+  # M1/M2 polarization
+  macrophage_polarization:
+    M1: ["CD80", "CD86", "IL1B", "TNF", "NOS2"]
+    M2: ["CD163", "MRC1", "IL10", "ARG1", "TGFB1"]
+
+# Spatial analysis parameters
+spatial:
+  # Cell2location
+  cell2location:
+    n_cells_per_location: 30
+    detection_alpha: 20
+    max_epochs: 30000
+
+  # Spatial statistics
+  neighborhood:
+    n_rings: 2
+    coord_type: "generic"
+
+  # Niche identification
+  niche:
+    n_neighborhoods: 10
+    resolution: 0.5
+
+# Cell-cell communication
+communication:
+  liana:
+    resource: "consensus"
+    methods: ["natmi", "connectome", "logfc", "sca"]
+
+  # Ligand-receptor filtering
+  min_expr_prop: 0.1
+  min_expr: 0.5
+
+# Differential expression
+de:
+  method: "wilcoxon"
+  corr_method: "benjamini-hochberg"
+  alpha: 0.05
+  log2fc_threshold: 0.5
+
+# Gene program identification
+gene_programs:
+  cnmf:
+    n_components: [5, 10, 15, 20, 25]
+    n_iter: 100
+
+# Resistance scoring
+resistance:
+  # Known resistance signatures
+  signatures:
+    innate_resistance: ["AXL", "TWIST1", "WNT5A"]
+    acquired_resistance: ["SERPINF1", "VEGFA"]
+    immune_exclusion: ["TGFB1", "FAP", "POSTN"]
+
+# Visualization
+visualization:
+  figure_dpi: 300
+  figure_format: "pdf"
+  color_palette: "viridis"
+
+# Reproducibility
+random_seed: 42
+n_jobs: -1  # Use all available cores

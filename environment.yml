@@ -1,0 +1,116 @@
+name: spatial-immunoresist
+channels:
+  - conda-forge
+  - bioconda
+  - pytorch
+  - nvidia
+  - defaults
+
+dependencies:
+  # Python
+  - python=3.10
+
+  # Core scverse ecosystem
+  - scanpy>=1.10
+  - anndata>=0.10
+  - squidpy>=1.4
+  - muon>=0.1.5
+
+  # Deep learning & GPU support
+  - pytorch>=2.0
+  - pytorch-cuda=11.8
+  - scvi-tools>=1.1
+  - cell2location>=0.1
+
+  # Data handling
+  - numpy>=1.24
+  - pandas>=2.0
+  - scipy>=1.10
+  - h5py
+  - zarr
+  - loompy
+
+  # Visualization
+  - matplotlib>=3.7
+  - seaborn>=0.12
+  - plotly>=5.0
+
+  # Statistical analysis
+  - statsmodels
+  - scikit-learn>=1.3
+  - umap-learn
+
+  # Batch correction alternatives
+  - harmonypy
+  - bbknn
+
+  # Cell type annotation
+  - celltypist
+
+  # Functional analysis
+  - decoupler>=1.5
+  - pydeseq2
+
+  # Network analysis
+  - networkx
+  - igraph
+  - leidenalg
+
+  # Jupyter & development
+  - jupyterlab>=4.0
+  - ipykernel
+  - ipywidgets
+  - tqdm
+
+  # File I/O
+  - openpyxl
+  - xlrd
+
+  # GEO data download
+  - geoparse
+
+  # Utilities
+  - pyyaml
+  - rich
+  - click
+
+  # pip-only packages
+  - pip
+  - pip:
+    # Cell-cell communication
+    - liana>=1.0
+    - cellphonedb
+    - omnipath
+
+    # Additional scverse tools
+    - scirpy  # TCR/BCR analysis
+    - pertpy  # Perturbation analysis
+    - scperturb
+
+    # Spatial tools
+    - spatialdata
+    - napari-spatialdata
+
+    # NMF for gene programs
+    - cnmf
+
+    # Survival analysis
+    - lifelines
+
+    # Differential expression
+    - diffxpy
+
+    # Gene set enrichment
+    - gseapy
+    - enrichr
+
+    # Database connections
+    - mygene
+    - biomart
+
+    # Progress bars
+    - alive-progress
+
+    # Configuration
+    - python-dotenv
+    - hydra-core
